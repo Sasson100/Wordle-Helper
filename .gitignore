@@ -1,0 +1,4 @@
+/build
+/dist
+package_setup.bat
+wordle_helper.spec
