@@ -81,8 +81,9 @@ class WordleLabel(ctk.CTkFrame):
             self.master.index - 1
         )[self.index]
 
+        self.label.configure(text=letter)
         if letter:
-            self.label.configure(text=letter)
+            
             if self.color in ("White", "Red"):
                 self.color = prev_letter_colors[letter]
                 self.optionmenu.grid()
@@ -106,7 +107,7 @@ class WordleTextbox(ctk.CTkFrame):
             validate="key",
             validatecommand=(self.register(self.validate_input), "%P"),
         )
-        self.entry.place(x=-100, y=-100)
+        self.entry.place(x=-100,y=-100)
         self.labels: list[WordleLabel] = []
         for i in range(5):
             self.labels.append(WordleLabel(self, i))
@@ -154,18 +155,21 @@ class App(ctk.CTk):
         self.title("Wordle helper")
         self.columnconfigure(0, weight=1)
 
+        self.clear_button = ctk.CTkButton(self,text="Clear",command=lambda: self.clear_rows(0))
+        self.clear_button.grid(row=0,column=0)
+
         self.textboxes: list[WordleTextbox] = []
         for i in range(5):
             tb = WordleTextbox(self, i)
-            tb.grid(row=i, column=0)
+            tb.grid(row=i+1, column=0)
             if i > 0:
                 tb.entry.configure(state="disabled")
             self.textboxes.append(tb)
 
         self.valid_words_label = ctk.CTkLabel(self,text=f"Valid word count: {len(words)}")
-        self.valid_words_label.grid(row=5, column=0)
+        self.valid_words_label.grid(row=6, column=0)
         self.textbox = ctk.CTkTextbox(self, width=500, wrap="word")
-        self.textbox.grid(row=6, column=0)
+        self.textbox.grid(row=7, column=0)
         self.word_char_counts = {}
         for word in words:
             self.word_char_counts[word] = self.char_count(word)
@@ -214,9 +218,11 @@ class App(ctk.CTk):
             tb = self.textboxes[i]
             if not tb.entry.get():
                 continue
-            tb.entry.delete(0)
+            
             tb.validate_input("")
-            tb.entry.configure(state="disabled")
+            tb.entry.delete(0,"end")
+            if i != 0:
+                tb.entry.configure(state="disabled")
 
     def unlock_textbox(self, index: int):
         """
